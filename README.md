@@ -6,7 +6,7 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
-![alt text](image.png)
+![alt text](image-1.png)
 
 ### `npm start`
 
