@@ -1,16 +1,20 @@
 // src/Scheduler.js
 import React, { useState, useEffect } from 'react';
 import EventCard from './EventCard';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import { format } from 'date-fns'; // For formatting the date
 
 const Scheduler = () => {
   const [events, setEvents] = useState([]);
   const [newEvent, setNewEvent] = useState({ title: '', date: '' });
+  const [selectedDate, setSelectedDate] = useState(null); // State for DatePicker
   const [isEditing, setIsEditing] = useState(false);
   const [editingEventId, setEditingEventId] = useState(null);
 
   // Fetch events from the server
   useEffect(() => {
-    fetch('http://localhost:5000/events')
+    fetch('http://13.127.169.105:5000/events')
       .then((response) => response.json())
       .then((data) => setEvents(data))
       .catch((error) => console.error('Error fetching events:', error));
@@ -18,18 +22,20 @@ const Scheduler = () => {
 
   // Add a new event
   const addEvent = () => {
-    if (newEvent.title && newEvent.date) {
-      fetch('http://localhost:5000/events', {
+    if (newEvent.title && selectedDate) {
+      const eventToAdd = { ...newEvent, date: format(selectedDate, 'yyyy-MM-dd') };
+      fetch('http://13.127.169.105:5000/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newEvent),
+        body: JSON.stringify(eventToAdd),
       })
         .then((response) => response.json())
         .then((data) => {
           setEvents([...events, data]);
-          setNewEvent({ title: '', date: '' }); // Reset input fields
+          setNewEvent({ title: '', date: '' });
+          setSelectedDate(null); // Reset date picker
         })
         .catch((error) => console.error('Error adding event:', error));
     }
@@ -39,6 +45,7 @@ const Scheduler = () => {
   const editEvent = (id) => {
     const eventToEdit = events.find((event) => event.id === id);
     setNewEvent({ title: eventToEdit.title, date: eventToEdit.date });
+    setSelectedDate(new Date(eventToEdit.date)); // Set date picker with existing date
     setIsEditing(true);
     setEditingEventId(id);
   };
@@ -46,22 +53,24 @@ const Scheduler = () => {
   // Update event after editing
   const updateEvent = () => {
     if (editingEventId !== null) {
-      fetch(`http://localhost:5000/events/${editingEventId}`, {
+      const updatedEvent = { ...newEvent, date: format(selectedDate, 'yyyy-MM-dd') };
+      fetch(`http://13.127.169.105:5000/events/${editingEventId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newEvent),
+        body: JSON.stringify(updatedEvent),
       })
         .then((response) => response.json())
         .then(() => {
           setEvents(
             events.map((event) =>
-              event.id === editingEventId ? { ...event, ...newEvent } : event
+              event.id === editingEventId ? { ...event, ...updatedEvent } : event
             )
           );
           setIsEditing(false);
           setNewEvent({ title: '', date: '' });
+          setSelectedDate(null); // Reset date picker
           setEditingEventId(null);
         })
         .catch((error) => console.error('Error updating event:', error));
@@ -70,7 +79,7 @@ const Scheduler = () => {
 
   // Delete an event
   const deleteEvent = (id) => {
-    fetch(`http://localhost:5000/events/${id}`, {
+    fetch(`http://13.127.169.105:5000/events/${id}`, {
       method: 'DELETE',
     })
       .then(() => {
@@ -90,11 +99,12 @@ const Scheduler = () => {
             value={newEvent.title}
             onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
           />
-          <input
-            type="text"
-            placeholder="Event Date"
-            value={newEvent.date}
-            onChange={(e) => setNewEvent({ ...newEvent, date: e.target.value })}
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            dateFormat="yyyy-MM-dd"
+            placeholderText="Event Date"
+            minDate={new Date()} // Restrict past dates
           />
           {isEditing ? (
             <button className="add-event-button" onClick={updateEvent}>
