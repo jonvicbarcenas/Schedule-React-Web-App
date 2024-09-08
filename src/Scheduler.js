@@ -14,7 +14,7 @@ const Scheduler = () => {
 
   // Fetch events from the server
   useEffect(() => {
-    fetch('http://13.127.169.105:5000/events')
+    fetch('http://13.127.169.105:3001/events')
       .then((response) => response.json())
       .then((data) => setEvents(data))
       .catch((error) => console.error('Error fetching events:', error));
@@ -24,7 +24,7 @@ const Scheduler = () => {
   const addEvent = () => {
     if (newEvent.title && selectedDate) {
       const eventToAdd = { ...newEvent, date: format(selectedDate, 'yyyy-MM-dd') };
-      fetch('http://13.127.169.105:5000/events', {
+      fetch('http://13.127.169.105:3001/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ const Scheduler = () => {
   const updateEvent = () => {
     if (editingEventId !== null) {
       const updatedEvent = { ...newEvent, date: format(selectedDate, 'yyyy-MM-dd') };
-      fetch(`http://13.127.169.105:5000/events/${editingEventId}`, {
+      fetch(`http://13.127.169.105:3001/events/${editingEventId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +79,7 @@ const Scheduler = () => {
 
   // Delete an event
   const deleteEvent = (id) => {
-    fetch(`http://13.127.169.105:5000/events/${id}`, {
+    fetch(`http://13.127.169.105:3001/events/${id}`, {
       method: 'DELETE',
     })
       .then(() => {
