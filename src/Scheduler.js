@@ -5,6 +5,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns'; // For formatting the date
 
+const IP = '13.127.169.105';
+
 const Scheduler = () => {
   const [events, setEvents] = useState([]);
   const [newEvent, setNewEvent] = useState({ title: '', date: '' });
@@ -14,7 +16,7 @@ const Scheduler = () => {
 
   // Fetch events from the server
   useEffect(() => {
-    fetch('http://13.127.169.105:3001/events')
+    fetch('http://${IP}:3001/events')
       .then((response) => response.json())
       .then((data) => setEvents(data))
       .catch((error) => console.error('Error fetching events:', error));
@@ -24,7 +26,7 @@ const Scheduler = () => {
   const addEvent = () => {
     if (newEvent.title && selectedDate) {
       const eventToAdd = { ...newEvent, date: format(selectedDate, 'yyyy-MM-dd') };
-      fetch('http://13.127.169.105:3001/events', {
+      fetch('http://${IP}:3001/events', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +56,7 @@ const Scheduler = () => {
   const updateEvent = () => {
     if (editingEventId !== null) {
       const updatedEvent = { ...newEvent, date: format(selectedDate, 'yyyy-MM-dd') };
-      fetch(`http://13.127.169.105:3001/events/${editingEventId}`, {
+      fetch(`http://${IP}:3001/events/${editingEventId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -79,7 +81,7 @@ const Scheduler = () => {
 
   // Delete an event
   const deleteEvent = (id) => {
-    fetch(`http://13.127.169.105:3001/events/${id}`, {
+    fetch(`http://${IP}:3001/events/${id}`, {
       method: 'DELETE',
     })
       .then(() => {
