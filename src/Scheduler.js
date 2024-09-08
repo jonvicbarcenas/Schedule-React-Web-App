@@ -16,7 +16,7 @@ const Scheduler = () => {
 
   // Fetch events from the server
   useEffect(() => {
-    fetch('http://${IP}:3001/events')
+    fetch(`http://${IP}:3001/events`)
       .then((response) => response.json())
       .then((data) => setEvents(data))
       .catch((error) => console.error('Error fetching events:', error));
@@ -26,7 +26,7 @@ const Scheduler = () => {
   const addEvent = () => {
     if (newEvent.title && selectedDate) {
       const eventToAdd = { ...newEvent, date: format(selectedDate, 'yyyy-MM-dd') };
-      fetch('http://${IP}:3001/events', {
+      fetch(`http://${IP}:3001/events`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -54,7 +54,7 @@ const Scheduler = () => {
 
   // Update event after editing
   const updateEvent = () => {
-    if (editingEventId !== null) {
+    if (editingEventId !== null && newEvent.title && selectedDate) {
       const updatedEvent = { ...newEvent, date: format(selectedDate, 'yyyy-MM-dd') };
       fetch(`http://${IP}:3001/events/${editingEventId}`, {
         method: 'PUT',
