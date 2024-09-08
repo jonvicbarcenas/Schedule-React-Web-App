@@ -5,6 +5,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { format } from 'date-fns'; // For formatting the date
 
+
+// YOU CAN CUSTOMIZE THE IP ADDRESS BELOW OR USE THE DEFAULT ONE 'localhost'
 const IP = '13.127.169.105';
 
 const Scheduler = () => {
@@ -25,7 +27,12 @@ const Scheduler = () => {
   // Add a new event
   const addEvent = () => {
     if (newEvent.title && selectedDate) {
-      const eventToAdd = { ...newEvent, date: format(selectedDate, 'yyyy-MM-dd') };
+      const formattedDate = format(selectedDate, 'yyyy-MM-dd');
+      const eventToAdd = { ...newEvent, date: formattedDate };
+      // if (formattedDate === '2024-09-15') {
+      //   eventToAdd.title = 'HAPPY BIRTHDAY BEBOY';
+      
+      // }
       fetch(`http://${IP}:3001/events`, {
         method: 'POST',
         headers: {
